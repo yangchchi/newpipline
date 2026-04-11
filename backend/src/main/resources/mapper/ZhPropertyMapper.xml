@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhinvest.map.mapper.ZhPropertyMapper">
+
+    <select id="selectByBounds" resultType="com.zhinvest.map.web.dto.MapPropertyItemVO">
+        SELECT id, name, status, longitude, latitude, region
+        FROM zh_property
+        WHERE longitude &gt;= #{minLng} AND longitude &lt;= #{maxLng}
+          AND latitude &gt;= #{minLat} AND latitude &lt;= #{maxLat}
+        <if test="statusList != null and statusList.size() &gt; 0">
+            AND status IN
+            <foreach collection="statusList" item="s" open="(" separator="," close=")">
+                #{s}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="searchByName" resultType="com.zhinvest.map.web.dto.SearchItemVO">
+        SELECT id, name, region, longitude, latitude
+        FROM zh_property
+        WHERE name LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY id
+        LIMIT 10
+    </select>
+
+    <select id="selectDetailById" resultType="com.zhinvest.map.web.dto.PropertyDetailVO">
+        SELECT id,
+               name,
+               city,
+               region,
+               status,
+               main_layout AS mainLayout,
+               avg_price AS avgPrice,
+               address,
+               data_update_time AS dataUpdateTime
+        FROM zh_property
+        WHERE id = #{id}
+    </select>
+</mapper>
